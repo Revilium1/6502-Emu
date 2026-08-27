@@ -86,6 +86,13 @@ struct CPU {
         return Data;
     }
 
+	Byte ReadWord(s32 & Cycles, Word Address, Mem & memory) {
+        Word LoByte = ReadByte(Cycles, Address, memory);
+		Word HiByte = ReadByte(Cycles, Address + 1, memory);
+        return LoByte |= (HiByte << 8);
+    }
+
+
     // opcodes
     static constexpr Byte
     INS_LDA_IM = 0xA9,
@@ -134,9 +141,39 @@ struct CPU {
 			case INS_LDA_ABS: {
 				Word AbsAddress = FetchWord(Cycles, memory);
 				A = ReadByte(Cycles, AbsAddress, memory);
-
+				LDASetStatus();
 			} break;
 
+			case INS_LDA_ABSX:
+			{
+				Word AbsAddress = FetchWord( Cycles, memory );
+				Word AbsAddressX = AbsAddress + X;
+				A = ReadByte( Cycles, AbsAddressX, memory );
+				if ( AbsAddressX - AbsAddress >= 0xFF )
+				{
+					Cycles--;
+				}
+			} break;
+
+			case INS_LDA_ABSY:
+			{
+				Word AbsAddress = FetchWord( Cycles, memory );
+				Word AbsAddressY = AbsAddress + Y;
+				A = ReadByte( Cycles, AbsAddressY, memory );
+				if ( AbsAddressY - AbsAddress >= 0xFF )
+				{
+					Cycles--;
+				}
+			} break;
+
+			case INS_LDA_INDX: {
+				Byte ZPAddress = FetchByte(Cycles, memory);
+				ZPAddress += X;
+				Cycles--;
+				Word EffectiveAddr = ReadWord(Cycles, ZPAddress, memory);
+				A = ReadByte(Cycles, EffectiveAddr, memory);
+				LDASetStatus();
+			} break;
             case INS_JSR: {
                 Word SubAddr =
                     FetchWord(Cycles, memory);
@@ -148,7 +185,7 @@ struct CPU {
             } break;
 
             default: {
-                printf("Instruction %d not implemented\n", Ins);
+                throw -1;
             } break;
             }
         }

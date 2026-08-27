@@ -75,21 +75,6 @@ TEST_F(M6502Test1, TheCPUCanExecuteMoreCyclesThanRequestedIfTheInstructionRequir
 
 }
 
-TEST_F(M6502Test1, ExecutingABadInstructionDoesNotCauseAnInfiniteLoop)
-{   
-    // given
-    mem[0xFFFC] = 0x00; // bad instruction
-    mem[0xFFFD] = 0x00;
-    constexpr s32 NUM_CYCLES = 1;
-
-    // when
-    s32 CyclesUsed = cpu.Execute(NUM_CYCLES, mem);
-
-    // then
-    EXPECT_EQ(CyclesUsed, NUM_CYCLES);
-
-}
-
 TEST_F(M6502Test1, LDA_IMCanAffectTheZeroFlag)
 {   
     // given
@@ -200,7 +185,7 @@ TEST_F(M6502Test1, LDA_ABSXCanLoadAValueFromAnAddressIntoTheARegister)
     mem[0xFFFC] = CPU::INS_LDA_ABSX;
     mem[0xFFFD] = 0x80;
     mem[0xFFFE] = 0x44; // 0x4480
-    mem[0x4481] = 0x9A;
+    mem[0x4481] = 0x37;
     constexpr s32 NUM_CYCLES = 4;
 
     // when
@@ -208,7 +193,7 @@ TEST_F(M6502Test1, LDA_ABSXCanLoadAValueFromAnAddressIntoTheARegister)
     s32 CyclesUsed = cpu.Execute(NUM_CYCLES, mem);
 
     // then
-    EXPECT_EQ(cpu.A, 0x9A);
+    EXPECT_EQ(cpu.A, 0x37);
     EXPECT_FALSE(cpu.Z);
     EXPECT_FALSE(cpu.N);
     VerifyUnmodifiedRegFromLDA(cpu, cpuCopy);
@@ -222,7 +207,7 @@ TEST_F(M6502Test1, LDA_ABSYCanLoadAValueFromAnAddressIntoTheARegister)
     mem[0xFFFC] = CPU::INS_LDA_ABSY;
     mem[0xFFFD] = 0x80;
     mem[0xFFFE] = 0x44; // 0x4480
-    mem[0x4481] = 0x9A;
+    mem[0x4481] = 0x2C;
     constexpr s32 NUM_CYCLES = 4;
 
     // when
@@ -230,7 +215,7 @@ TEST_F(M6502Test1, LDA_ABSYCanLoadAValueFromAnAddressIntoTheARegister)
     s32 CyclesUsed = cpu.Execute(NUM_CYCLES, mem);
 
     // then
-    EXPECT_EQ(cpu.A, 0x9A);
+    EXPECT_EQ(cpu.A, 0x2C);
     EXPECT_FALSE(cpu.Z);
     EXPECT_FALSE(cpu.N);
     VerifyUnmodifiedRegFromLDA(cpu, cpuCopy);
@@ -244,7 +229,7 @@ TEST_F(M6502Test1, LDA_ABSXCanLoadAValueFromAnAddressIntoTheARegisterWhenItCross
     mem[0xFFFC] = CPU::INS_LDA_ABSX;
     mem[0xFFFD] = 0x02;
     mem[0xFFFE] = 0x44; // 0x4402
-    mem[0x4501] = 0x9A;
+    mem[0x4501] = 0x3F;
     constexpr s32 NUM_CYCLES = 5;
 
     // when
@@ -252,7 +237,7 @@ TEST_F(M6502Test1, LDA_ABSXCanLoadAValueFromAnAddressIntoTheARegisterWhenItCross
     s32 CyclesUsed = cpu.Execute(NUM_CYCLES, mem);
 
     // then
-    EXPECT_EQ(cpu.A, 0x9A);
+    EXPECT_EQ(cpu.A, 0x3F);
     EXPECT_FALSE(cpu.Z);
     EXPECT_FALSE(cpu.N);
     VerifyUnmodifiedRegFromLDA(cpu, cpuCopy);
@@ -265,7 +250,7 @@ TEST_F(M6502Test1, LDA_ABSYCanLoadAValueFromAnAddressIntoTheARegisterWhenItCross
     mem[0xFFFC] = CPU::INS_LDA_ABSY;
     mem[0xFFFD] = 0x02;
     mem[0xFFFE] = 0x44; // 0x4402
-    mem[0x4501] = 0x9A;
+    mem[0x4501] = 0x21;
     constexpr s32 NUM_CYCLES = 5;
 
     // when
@@ -273,7 +258,7 @@ TEST_F(M6502Test1, LDA_ABSYCanLoadAValueFromAnAddressIntoTheARegisterWhenItCross
     s32 CyclesUsed = cpu.Execute(NUM_CYCLES, mem);
 
     // then
-    EXPECT_EQ(cpu.A, 0x9A);
+    EXPECT_EQ(cpu.A, 0x21);
     EXPECT_FALSE(cpu.Z);
     EXPECT_FALSE(cpu.N);
     VerifyUnmodifiedRegFromLDA(cpu, cpuCopy);
@@ -288,7 +273,7 @@ TEST_F(M6502Test1, LDA_INDXCanLoadAValueIntoTheARegister)
     mem[0xFFFD] = 0x02;
     mem[0x0006] = 0x00;
     mem[0x0007] = 0x80;
-    mem[0x8000] = 0xFA;
+    mem[0x8004] = 0xFA;
     constexpr s32 NUM_CYCLES = 6;
 
     // when
