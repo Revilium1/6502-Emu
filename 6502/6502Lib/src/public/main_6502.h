@@ -36,7 +36,7 @@ struct Mem
 		return Data[Address];
 	}
 
-    void WriteWord(Word Value, u32 Address, u32& Cycles) {
+    void WriteWord(Word Value, u32 Address, s32& Cycles) {
         Data[Address] = Value & 0xFF;
         Data[Address + 1] = (Value >> 8);
         Cycles -= 2;
@@ -66,20 +66,20 @@ struct CPU {
         memory.Initialise();
     }
 
-    Byte FetchByte(u32& Cycles, Mem& memory) {
+    Byte FetchByte(s32& Cycles, Mem& memory) {
         Byte Data = memory[PC];
         PC++;
         Cycles--;
         return Data;
     }
 
-    Byte ReadByte(u32& Cycles, Byte Address, Mem& memory) {
+    Byte ReadByte(s32& Cycles, Byte Address, Mem& memory) {
         Byte Data = memory[Address];
         Cycles--;
         return Data;
     }
 
-    Word FetchWord(u32& Cycles, Mem& memory) {
+    Word FetchWord(s32& Cycles, Mem& memory) {
         // 6502 is little endian
         Word Data = memory[PC];
         PC++;
@@ -97,6 +97,11 @@ struct CPU {
 		INS_LDA_IM = 0xA9,
 		INS_LDA_ZP = 0xA5,
 		INS_LDA_ZPX = 0xB5,
+        INS_LDA_ABS = 0xAD,
+        INS_LDA_ABSX = 0xBD,
+        INS_LDA_ABSY = 0xB9,
+        INS_LDA_INDX = 0xA1,
+        INS_LDA_INDY = 0xB1,
 		INS_JSR = 0x20;
 
     void LDASetStatus() {
@@ -104,9 +109,9 @@ struct CPU {
         N = (A & 0b10000000) > 0;
     }
 
-    s32 Execute(u32 Cycles, Mem& memory) 
+    s32 Execute(s32 Cycles, Mem& memory) 
     {
-        const u32 CyclesRequested = Cycles;
+        const s32 CyclesRequested = Cycles;
         while (Cycles > 0)
         {
             Byte Ins = FetchByte(Cycles, memory);
@@ -149,7 +154,7 @@ struct CPU {
 
                 default:
                 {
-                    printf("Instruction not implemented %d", Ins);
+                    printf("Instruction %d not implemented\n", Ins);
                 } break;
             }
         }
