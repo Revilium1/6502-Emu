@@ -18,4 +18,7 @@ cmake -S "$ROOT_DIR" -B "$BUILD_DIR" \
 	-Dgtest_force_shared_crt=ON
 
 cmake --build "$BUILD_DIR" --target M6502Test -j"$(nproc)"
-"$BUILD_DIR/6502/6502Test/M6502Test" "$@"
+
+if [[ "${1:-}" != "--build-only" ]]; then
+    "$BUILD_DIR/6502/6502Test/M6502Test" "${@:2}"
+fi

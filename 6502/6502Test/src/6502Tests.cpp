@@ -273,7 +273,7 @@ TEST_F(M6502Test1, LDA_INDXCanLoadAValueIntoTheARegister)
     mem[0xFFFD] = 0x02;
     mem[0x0006] = 0x00;
     mem[0x0007] = 0x80;
-    mem[0x8004] = 0xFA;
+    mem[0x8000] = 0x3D;
     constexpr s32 NUM_CYCLES = 6;
 
     // when
@@ -281,7 +281,7 @@ TEST_F(M6502Test1, LDA_INDXCanLoadAValueIntoTheARegister)
     s32 CyclesUsed = cpu.Execute(NUM_CYCLES, mem);
 
     // then
-    EXPECT_EQ(cpu.A, 0xFA);
+    EXPECT_EQ(cpu.A, 0x3D);
     EXPECT_FALSE(cpu.Z);
     EXPECT_FALSE(cpu.N);
     VerifyUnmodifiedRegFromLDA(cpu, cpuCopy);

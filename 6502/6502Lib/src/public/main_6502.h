@@ -86,7 +86,7 @@ struct CPU {
         return Data;
     }
 
-	Byte ReadWord(s32 & Cycles, Word Address, Mem & memory) {
+	Word ReadWord(s32 & Cycles, Word Address, Mem & memory) {
         Word LoByte = ReadByte(Cycles, Address, memory);
 		Word HiByte = ReadByte(Cycles, Address + 1, memory);
         return LoByte |= (HiByte << 8);
@@ -167,10 +167,10 @@ struct CPU {
 			} break;
 
 			case INS_LDA_INDX: {
-				Byte ZPAddress = FetchByte(Cycles, memory);
+				Byte ZPAddress = FetchByte( Cycles, memory );
 				ZPAddress += X;
 				Cycles--;
-				Word EffectiveAddr = ReadWord(Cycles, ZPAddress, memory);
+				Word EffectiveAddr = ReadWord( Cycles, ZPAddress, memory );
 				A = ReadByte(Cycles, EffectiveAddr, memory);
 				LDASetStatus();
 			} break;
